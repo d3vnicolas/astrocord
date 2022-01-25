@@ -1,65 +1,19 @@
+import React from 'react';
 import { Box, Button, Text, TextField, Image } from '@skynexui/components';
+import { useRouter } from 'next/router';
 import appConfig from '../config.json';
 
-function GlobalStyle() {
-    return (
-        <style global jsx>{`
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-          list-style: none;
-        }
-        body {
-          font-family: 'Open Sans', sans-serif;
-        }
-        /* App fit Height */ 
-        html, body, #__next {
-          min-height: 100vh;
-          display: flex;
-          flex: 1;
-        }
-        #__next {
-          flex: 1;
-        }
-        #__next > * {
-          flex: 1;
-        }
-        /* ./App fit Height */ 
-      `}</style>
-    );
-}
-
-function Titulo(props) {
-    const Tag = props.tag || 'h1'; 
-
-    return (
-        <>
-            <Tag>{props.children}</Tag>
-
-            <style jsx>{`
-                ${Tag}{
-                    color: ${appConfig.theme.colors.neutrals['900']};
-                    font-size: 24px;
-                    font-weight: 600;
-                }
-            `}</style>
-        </>
-    );
-}
-
 export default function PaginaInicial() {
-    const username = 'peas';
+    const [username, setUserName] = React.useState('d3vnicolas');
+    const Route = useRouter();
 
     return (
         <>
-            <GlobalStyle />
             <Box
                 styleSheet={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    backgroundColor: appConfig.theme.colors.primary[500],
-                    backgroundImage: 'url(https://virtualbackgrounds.site/wp-content/uploads/2020/08/the-matrix-digital-rain.jpg)',
-                    backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'multiply',
+                    backgroundImage: 'url(https://images.unsplash.com/photo-1504333638930-c8787321eee0?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb)',
+                    backgroundRepeat: 'no-repeat', backgroundSize: 'cover'
                 }}
             >
                 <Box
@@ -80,13 +34,25 @@ export default function PaginaInicial() {
                     {/* Formulário */}
                     <Box
                         as="form"
+                        onSubmit={function(event){
+                            event.preventDefault();
+                            Route.push('/chat');
+                        }}
                         styleSheet={{
                             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                             width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px',
                         }}
                     >
-                        <Titulo tag="h2">Boas vindas de volta!</Titulo>
-                        <Text variant="body3" styleSheet={{ marginBottom: '32px', color: appConfig.theme.colors.neutrals[300] }}>
+                        <Text
+                            styleSheet={{
+                                fontSize: '22px',
+                                fontWeight: '900',
+                                color: appConfig.theme.colors.primary[900]
+                            }}
+                        >
+                            Boas vindas de volta!
+                        </Text>
+                        <Text variant="body3" styleSheet={{ marginBottom: '32px', color: appConfig.theme.colors.neutrals[400] }}>
                             {appConfig.name}
                         </Text>
 
@@ -99,6 +65,10 @@ export default function PaginaInicial() {
                                     mainColorHighlight: appConfig.theme.colors.primary[500],
                                     backgroundColor: appConfig.theme.colors.neutrals[800],
                                 },
+                            }}
+                            value={username}
+                            onChange={function(event){
+                                setUserName(event.target.value);
                             }}
                         />
                         <Button
