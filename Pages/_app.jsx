@@ -7,13 +7,17 @@ function GlobalStyle() {
           box-sizing: border-box;
           list-style: none;
         }
+        body, html{
+          width: 100%;
+          height: 100vh;
+        }
         body {
           font-family: 'Open Sans', sans-serif;
         }
         /* App fit Height */ 
         html, body, #__next {
-          min-height: 100vh;
           display: flex;
+          height: 100%;
           flex: 1;
         }
         #__next {
