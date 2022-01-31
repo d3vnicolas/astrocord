@@ -1,10 +1,10 @@
 import React from 'react';
 import { Box, Button, Text, TextField, Image } from '@skynexui/components';
 import { useRouter } from 'next/router';
-import appConfig from '../config.json';
+import appConfig from '../../config.json';
 
 export default function PaginaInicial() {
-    const [username, setUserName] = React.useState('d3vnicolas');
+    const [username, setUserName] = React.useState('github');
     const Route = useRouter();
 
     return (

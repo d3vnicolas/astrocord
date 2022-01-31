@@ -1,10 +1,10 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import { IoCloseOutline } from 'react-icons/io5';
 import React, { useEffect } from 'react';
-import appConfig from '../config.json';
+import appConfig from '../../config.json';
 import { useRouter } from 'next/router';
 import { createClient } from '@supabase/supabase-js';
-import { ButtonSendSticker } from '../src/Components/ButtonSendSticker';
+import { ButtonSendSticker } from '../Components/ButtonSendSticker';
 
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzMxNjA4MiwiZXhwIjoxOTU4ODkyMDgyfQ.kt0_M_4PARTmDTLiKhwvHSmp6aCKH4xVN9qmzTZagYs';
 const SUPABASE_URL = 'https://djhffvaqgiebncwviver.supabase.co';
