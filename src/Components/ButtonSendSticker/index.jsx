@@ -4,7 +4,7 @@ import appConfig from '../../../config.json';
 
 /* 
     se não houver uma exportação default
-    o import deve ser feiro por desestruturação
+    o import deve ser feito por desestruturação
 */
 
 export function ButtonSendSticker(props) {
@@ -53,17 +53,18 @@ export function ButtonSendSticker(props) {
             position: 'absolute',
             overflowY: 'hidden',
             width: {
-              xs: '200px',
+              xs: '220px',
               sm: '290px',
             },
             height: '300px',
-            right: '30px',
+            right: {sm: '30px', xs: '-180px'},
             bottom: '30px',
             padding: '16px',
             border: '1px solid rgba(255, 255, 255, 0.149)',
             boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
-            backgroundColor: 'rgba(235, 235, 235, 0.163)',
+            backgroundColor: 'rgba(0, 0, 0, 0.87)',
             backdropFilter: 'blur(3px)',
+            zIndex: '1',
           }}
           onClick={() => setOpenState(false)}
         >

@@ -10,23 +10,15 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5v
 const SUPABASE_URL = 'https://djhffvaqgiebncwviver.supabase.co';
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// function updateNew(addMsg){
-//     return supabaseClient.from('mensagens')
-//     .on('INSERT', (res) => {
-//         addMsg(res.new);
-//         console.log(addMsg);
-//     }).subscribe();
-// }
-
-    function listenerModify(addUpdates){
-        return supabaseClient.from('mensagens')
+function listenerModify(addUpdates) {
+    return supabaseClient.from('mensagens')
         .on('*', res => addUpdates(res)).subscribe();
-    }
+}
 
 export default function ChatPage() {
     const roteamento = useRouter();
     const user = roteamento.query.username;
-    const [mensagens, setMensagens] = React.useState('');
+    const [mensagem, setMensagem] = React.useState('');
     const [listaMsg, setListaMsg] = React.useState([]);
 
     const handleNovaMsg = (msg) => {
@@ -38,10 +30,10 @@ export default function ChatPage() {
 
         //insert da nova mensagem
         supabaseClient.from('mensagens')
-        .insert([newMsg])
-        .then();
+            .insert([newMsg])
+            .then();
 
-        setMensagens(''); //limpa o textarea
+        setMensagem(''); //limpa o textarea
     }
 
     useEffect(() => {
@@ -49,35 +41,28 @@ export default function ChatPage() {
             setListaMsg(data);
         });
 
-        listenerModify(async (data) => { //dispara sempre que houver uma modificação na tabela mensagens.
+
+        listenerModify((data) => { //dispara sempre que houver uma modificação na tabela mensagens.
             // console.log(data);
-            if(data.eventType === 'INSERT'){
+            if (data.eventType === 'INSERT') {
                 /* 
                     Passando uma callback no setState, capturamos sempre
                     seu valor atualizado
                 */
-                await setListaMsg(updateValue => {
-                    //setando um array no state; equivalente a push()
-                    return [
-                        data.new,
-                        ...updateValue //... espalha o array para não criar um array dentro do array
-                    ]
-                })
-            }else if(data.eventType === 'DELETE'){
-                await setListaMsg(updateValue => {
+               setListaMsg(updateValue => {
+                   return [
+                       data.new,
+                       ...updateValue //... espalha o array para não criar um array dentro do array
+                   ]
+               });
+            } else if (data.eventType === 'DELETE') {
+                setListaMsg(updateValue => {
                     return updateValue.filter(msg => msg.id !== data.old.id);
                 });
             }
-        })
+        });
 
-        // updateNew((newMsg) => {
-        //     setListaMsg((updateValue) => {
-        //         return [
-        //             newMsg,
-        //             ...updateValue, //... espalha o array para não criar um array dentro do array
-        //         ]
-        //     });
-        // });
+
     }, []);
 
     return (
@@ -146,12 +131,12 @@ export default function ChatPage() {
                     }}
                 >
                     <TextField
-                        value={mensagens}
-                        onChange={event => setMensagens(event.target.value)}
+                        value={mensagem}
+                        onChange={event => setMensagem(event.target.value)}
                         onKeyPress={event => {
                             if (event.key === "Enter") {
                                 event.preventDefault();
-                                handleNovaMsg(mensagens);
+                                handleNovaMsg(mensagem);
                                 // console.log(event.key);
                             }
                         }}
@@ -177,13 +162,13 @@ export default function ChatPage() {
                             },
                         }}
                     />
-                    <ButtonSendSticker 
+                    <ButtonSendSticker
                         onStickerClick={(sticker) => {
                             handleNovaMsg(':sticker:' + sticker);
                         }}
                     />
                     <Button
-                        onClick={() => handleNovaMsg(mensagens)}
+                        onClick={() => handleNovaMsg(mensagem)}
                         label="Enviar"
                         styleSheet={{
                             flex: 1,
@@ -194,10 +179,7 @@ export default function ChatPage() {
                             padding: '14px 0px',
                             backgroundColor: 'transparent',
                             backdropFilter: 'blur(1px)',
-                            border: {
-                                xs: `1px solid ${appConfig.theme.colors.primary[300]}`,
-                                sm: '1px solid rgba(255, 255, 255, 0.129)',
-                            },
+                            border: '1px solid rgba(255, 255, 255, 0.129)',
                             boxShadow: '0px 0px 6px 0px #0000007c',
                             hover: {
                                 border: `1px solid ${appConfig.theme.colors.primary[300]}`,
@@ -260,7 +242,7 @@ function MessageList({ listaMsg }) {
 
     const handleDelMsg = async (id) => {
         await supabaseClient
-        .from('mensagens').delete().match({ 'id': id });
+            .from('mensagens').delete().match({ 'id': id });
     }
 
 
@@ -275,10 +257,10 @@ function MessageList({ listaMsg }) {
                 color: appConfig.theme.colors.neutrals['000'],
             }}
         >
-            {listaMsg.map((mensagem) => {
+            {listaMsg.map((mensagem, key) => {
                 return (
                     <Text
-                        key={mensagem.id}
+                        key={key}
                         tag="li"
                         styleSheet={{
                             borderRadius: '15px',
@@ -354,21 +336,21 @@ function MessageList({ listaMsg }) {
                                 marginTop: '16px',
                             }}
                         >
-                            {mensagem.content.startsWith(':sticker:') 
-                            ? (
-                                <Image src={mensagem.content.replace(':sticker:', '')} 
-                                    styleSheet={{
-                                        maxWidth: {
-                                            xs: '100px',
-                                            sm: '200px',
-                                        }
-                                    }}
-                                /> //trocando para nada || deletando
-                            )
-                            :
-                            (
-                                mensagem.content
-                            )}
+                            {mensagem.content.startsWith(':sticker:')
+                                ? (
+                                    <Image src={mensagem.content.replace(':sticker:', '')}
+                                        styleSheet={{
+                                            maxWidth: {
+                                                xs: '100px',
+                                                sm: '200px',
+                                            }
+                                        }}
+                                    /> //trocando para nada || deletando
+                                )
+                                :
+                                (
+                                    mensagem.content
+                                )}
                         </Text>
                     </Text>
                 );
