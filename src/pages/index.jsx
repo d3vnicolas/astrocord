@@ -2,20 +2,22 @@ import React from 'react';
 import { Box, Button, Text, TextField, Image } from '@skynexui/components';
 import { useRouter } from 'next/router';
 import appConfig from '../../config.json';
+import { Oval } from 'react-loader-spinner';
 
 export default function PaginaInicial() {
     const [username, setUserName] = React.useState('github');
+    const [hasImage, setHasImage] = React.useState(true);
     const Route = useRouter();
 
     return (
         <>
             <Box /* fundo */
                 styleSheet={{
-                    display: 'flex', 
-                    alignItems: 'center', 
+                    display: 'flex',
+                    alignItems: 'center',
                     justifyContent: 'center',
                     backgroundImage: 'url(https://images.unsplash.com/photo-1504333638930-c8787321eee0?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb)',
-                    backgroundRepeat: 'no-repeat', 
+                    backgroundRepeat: 'no-repeat',
                     backgroundSize: 'cover'
                 }}
             >
@@ -43,11 +45,11 @@ export default function PaginaInicial() {
                             Route.push(`/chat?username=${username}`);
                         }}
                         styleSheet={{
-                            display: 'flex', 
-                            flexDirection: 'column', 
-                            alignItems: 'center', 
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
                             justifyContent: 'space-between',
-                            width: { xs: '100%', sm: '50%' }, 
+                            width: { xs: '100%', sm: '50%' },
                             textAlign: 'center',
                             marginBottom: {
                                 xs: '16px'
@@ -104,7 +106,7 @@ export default function PaginaInicial() {
                         />
                     </Box>
 
-                    <Box /* box foto */
+                    <Box
                         styleSheet={{
                             display: 'flex',
                             flexDirection: 'column',
@@ -115,25 +117,58 @@ export default function PaginaInicial() {
                             minHeight: '240px',
                         }}
                     >
-                        <Image
+                        <Box /* box foto */
                             styleSheet={{
+                                position: 'relative',
+                                width: '170px',
+                                height: '170px',
                                 borderRadius: '50%',
-                                marginBottom: '16px',
-                                background: `linear-gradient(to top left, ${appConfig.theme.colors.primary[500]}, ${appConfig.theme.colors.secondary[600]}) border-box`,
-                                border: `4px solid transparent`
+                                background: hasImage ? `linear-gradient(to top left, ${appConfig.theme.colors.primary[500]}, ${appConfig.theme.colors.secondary[600]}) border-box` : 'none',
+                                border: `4px solid transparent`,
+                                marginBottom: '8px',
                             }}
-                            src={`https://github.com/${username}.png`}
-                        />
+                        >
+
+                            <Box
+                                styleSheet={{
+                                    position: 'absolute',
+                                    width: '100%',
+                                    height: '100%',
+                                    borderRadius: '50%',
+                                    display: hasImage ? 'none' : 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}
+                            >
+                                <Oval
+                                    color={appConfig.theme.colors.secondary[200]}
+                                    secondaryColor={appConfig.theme.colors.secondary[900]}
+                                    ariaLabel="loading-indicator"
+                                />
+                            </Box>
+
+
+                            <Image
+                                styleSheet={{
+                                    borderRadius: '50%',
+                                    marginBottom: '16px',
+                                }}
+                                src={`https://github.com/${username}.png`}
+                                onError={event => { event.target.style.display = 'none'; setHasImage(false)}}
+                                onLoad={event => { event.target.style.display = 'block'; setHasImage(true)}}
+                            />
+
+                        </Box>
                         <Text
                             variant="body3"
                             styleSheet={{
-                                color: appConfig.theme.colors.neutrals[300],
+                                color: appConfig.theme.colors.neutrals[200],
                                 padding: '4px 16px',
                                 borderRadius: '1000px',
                                 boxShadow: 'inset 0px 0px 3px 0px #0000008f',
                             }}
                         >
-                            {username}
+                            {username || 'Procurando...'}
                         </Text>
                     </Box>
 
