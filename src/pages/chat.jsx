@@ -5,6 +5,7 @@ import appConfig from '../../config.json';
 import { useRouter } from 'next/router';
 import { createClient } from '@supabase/supabase-js';
 import { ButtonSendSticker } from '../Components/ButtonSendSticker';
+import LoadContent from '../Components/PlaceholderLoad';
 
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzMxNjA4MiwiZXhwIjoxOTU4ODkyMDgyfQ.kt0_M_4PARTmDTLiKhwvHSmp6aCKH4xVN9qmzTZagYs';
 const SUPABASE_URL = 'https://djhffvaqgiebncwviver.supabase.co';
@@ -20,6 +21,7 @@ export default function ChatPage() {
     const user = roteamento.query.username;
     const [mensagem, setMensagem] = React.useState('');
     const [listaMsg, setListaMsg] = React.useState([]);
+    const [load, setLoad] = React.useState(true);
 
     const handleNovaMsg = (msg) => {
         //monta um objeto com a mensagem nova
@@ -36,10 +38,10 @@ export default function ChatPage() {
         setMensagem(''); //limpa o textarea
     }
 
-    console.log(listaMsg);
     useEffect(() => {
         supabaseClient.from('mensagens').select('*').order('id', { ascending: false }).then(({ data }) => {
             setListaMsg(data);
+            setLoad(false);
         });
 
         listenerInsert((data) => { //dispara sempre que houver um insert na tabela mensagens.
@@ -106,7 +108,8 @@ export default function ChatPage() {
                     }}
                 >
 
-                    <MessageList listaMsg={listaMsg} setListaMsg={setListaMsg} />
+                    <MessageList listaMsg={listaMsg} setListaMsg={setListaMsg} load={load} />
+                    {/* <LoadContent /> */}
 
                 </Box>
                 <Box
@@ -229,7 +232,7 @@ function Header() {
     )
 }
 
-function MessageList({ listaMsg, setListaMsg }) {
+function MessageList({ listaMsg, setListaMsg, load }) {
 
     const handleDelMsg = async (id) => {
         setListaMsg(updateValue => {
@@ -250,6 +253,9 @@ function MessageList({ listaMsg, setListaMsg }) {
                 color: appConfig.theme.colors.neutrals['000'],
             }}
         >
+            {load && 
+                <LoadContent />
+            }
             {listaMsg.map((mensagem, key) => {
                 return (
                     <Text
