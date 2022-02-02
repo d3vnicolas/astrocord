@@ -10,9 +10,9 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5v
 const SUPABASE_URL = 'https://djhffvaqgiebncwviver.supabase.co';
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-function listenerModify(addUpdates) {
+function listenerInsert(addUpdates) {
     return supabaseClient.from('mensagens')
-        .on('*', res => addUpdates(res)).subscribe();
+        .on('INSERT', res => addUpdates(res)).subscribe();
 }
 
 export default function ChatPage() {
@@ -28,7 +28,7 @@ export default function ChatPage() {
             content: msg,
         }
 
-        //insert da nova mensagem
+        //insert da nova mensagem no supabase
         supabaseClient.from('mensagens')
             .insert([newMsg])
             .then();
@@ -36,33 +36,24 @@ export default function ChatPage() {
         setMensagem(''); //limpa o textarea
     }
 
+    console.log(listaMsg);
     useEffect(() => {
         supabaseClient.from('mensagens').select('*').order('id', { ascending: false }).then(({ data }) => {
             setListaMsg(data);
         });
 
-
-        listenerModify((data) => { //dispara sempre que houver uma modificação na tabela mensagens.
-            // console.log(data);
-            if (data.eventType === 'INSERT') {
-                /* 
-                    Passando uma callback no setState, capturamos sempre
-                    seu valor atualizado
-                */
-               setListaMsg(updateValue => {
-                   return [
-                       data.new,
-                       ...updateValue //... espalha o array para não criar um array dentro do array
-                   ]
-               });
-            } else if (data.eventType === 'DELETE') {
-                setListaMsg(updateValue => {
-                    return updateValue.filter(msg => msg.id !== data.old.id);
-                });
-            }
+        listenerInsert((data) => { //dispara sempre que houver um insert na tabela mensagens.
+            /* 
+                Passando uma callback no setState, capturamos sempre
+                seu valor atualizado
+            */
+            setListaMsg(updateValue => {
+                return [
+                    data.new,
+                    ...updateValue //... espalha o array para não criar um array dentro do array
+                ]
+            });
         });
-
-
     }, []);
 
     return (
@@ -115,7 +106,7 @@ export default function ChatPage() {
                     }}
                 >
 
-                    <MessageList listaMsg={listaMsg} />
+                    <MessageList listaMsg={listaMsg} setListaMsg={setListaMsg} />
 
                 </Box>
                 <Box
@@ -136,8 +127,7 @@ export default function ChatPage() {
                         onKeyPress={event => {
                             if (event.key === "Enter") {
                                 event.preventDefault();
-                                handleNovaMsg(mensagem);
-                                // console.log(event.key);
+                                mensagem === '' ? false : handleNovaMsg(mensagem);
                             }
                         }}
                         placeholder="Digite aqui..."
@@ -169,6 +159,7 @@ export default function ChatPage() {
                     />
                     <Button
                         onClick={() => handleNovaMsg(mensagem)}
+                        disabled={mensagem === '' ? true : false}
                         label="Enviar"
                         styleSheet={{
                             flex: 1,
@@ -211,7 +202,7 @@ function Header() {
                     color: appConfig.theme.colors.secondary[300],
                 }}
             >
-                Astro chat
+                Astro chat 🪐
             </Text>
             <Button
                 iconName="arrowLeft"
@@ -238,13 +229,15 @@ function Header() {
     )
 }
 
-function MessageList({ listaMsg }) {
+function MessageList({ listaMsg, setListaMsg }) {
 
     const handleDelMsg = async (id) => {
+        setListaMsg(updateValue => {
+            return updateValue.filter(msg => msg.id !== id);
+        });
         await supabaseClient
             .from('mensagens').delete().match({ 'id': id });
     }
-
 
     return (
         <Box
@@ -338,14 +331,14 @@ function MessageList({ listaMsg }) {
                         >
                             {mensagem.content.startsWith(':sticker:')
                                 ? (
-                                    <Image src={mensagem.content.replace(':sticker:', '')}
+                                    <Image src={mensagem.content.replace(':sticker:', '')}//trocando para nada || deletando
                                         styleSheet={{
                                             maxWidth: {
                                                 xs: '100px',
                                                 sm: '200px',
                                             }
                                         }}
-                                    /> //trocando para nada || deletando
+                                    />
                                 )
                                 :
                                 (
