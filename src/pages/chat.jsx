@@ -1,11 +1,13 @@
+import React, { useEffect } from 'react';
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import { IoCloseOutline } from 'react-icons/io5';
-import React, { useEffect } from 'react';
 import appConfig from '../../config.json';
 import { useRouter } from 'next/router';
 import { createClient } from '@supabase/supabase-js';
 import { ButtonSendSticker } from '../Components/ButtonSendSticker';
 import LoadContent from '../Components/PlaceholderLoad';
+import Profile from '../Components/Profile';
+import ClickNHold from 'react-click-n-hold';
 
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzMxNjA4MiwiZXhwIjoxOTU4ODkyMDgyfQ.kt0_M_4PARTmDTLiKhwvHSmp6aCKH4xVN9qmzTZagYs';
 const SUPABASE_URL = 'https://djhffvaqgiebncwviver.supabase.co';
@@ -22,7 +24,7 @@ export default function ChatPage() {
     const [mensagem, setMensagem] = React.useState('');
     const [listaMsg, setListaMsg] = React.useState([]);
     const [load, setLoad] = React.useState(true);
-
+    const [showProfile, setShowProfile] = React.useState(false);
     const handleNovaMsg = (msg) => {
         //monta um objeto com a mensagem nova
         const newMsg = {
@@ -59,6 +61,7 @@ export default function ChatPage() {
     }, []);
 
     return (
+
         <Box /* background */
             styleSheet={{
                 display: 'flex',
@@ -70,8 +73,10 @@ export default function ChatPage() {
                 backgroundBlendMode: 'multiply',
                 color: appConfig.theme.colors.neutrals['000']
             }}
+
         >
             <Box /* card */
+                className='card'
                 styleSheet={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -89,29 +94,30 @@ export default function ChatPage() {
                 }}
             >
                 <Header />
-                <Box
-                    styleSheet={{
-                        position: 'relative',
-                        display: 'flex',
-                        flex: 1,
-                        height: {
-                            sm: '70%',
-                            xs: '50%',
-                        },
-                        flexDirection: 'column',
-                        padding: '16px',
-                        borderRadius: '15px',
-                        marginBottom: '16px',
-                        border: '1px solid rgba(255, 255, 255, 0.129)',
-                        boxShadow: 'inset 0px 0px 6px 0px #0000007c',
-                        backgroundColor: 'rgba(235, 235, 235, 0)',
-                    }}
-                >
+                <style jsx>{`
+                    div.card{
+                        position: relative;
+                        display: flex;
+                        flex: 1;
+                        height: 50%;
+                        flex-direction: column;
+                        padding: 0px 16px 0px 0;
+                        border-radius: 15px;
+                        margin-bottom: 16px;
+                        border: 1px solid rgba(255, 255, 255, 0.129);
+                        box-shadow: inset 0px 0px 6px 0px #0000007c;
+                        background-color: rgba(235, 235, 235, 0);
+                        -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);
+                        -ms-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);
+                        -moz-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);
+                    } 
+                `}</style>
+                <div className='card'>
 
-                    <MessageList listaMsg={listaMsg} setListaMsg={setListaMsg} load={load} />
-                    {/* <LoadContent /> */}
+                    <MessageList listaMsg={listaMsg} setListaMsg={setListaMsg} load={load} setShowProfile={setShowProfile} />
+                    {showProfile && <Profile setShowProfile={setShowProfile} />}
 
-                </Box>
+                </div>
                 <Box
                     as="form"
                     styleSheet={{
@@ -232,7 +238,9 @@ function Header() {
     )
 }
 
-function MessageList({ listaMsg, setListaMsg, load }) {
+function MessageList({ listaMsg, setListaMsg, load, setShowProfile }) {
+
+    // const [dragClose, setDragClose] = React.useState(false);
 
     const handleDelMsg = async (id) => {
         setListaMsg(updateValue => {
@@ -241,117 +249,135 @@ function MessageList({ listaMsg, setListaMsg, load }) {
         await supabaseClient
             .from('mensagens').delete().match({ 'id': id });
     }
-
     return (
         <Box
             tag="ul"
             styleSheet={{
+                width: '100%',
+                paddingRight: '4%',
                 overflow: 'auto',
                 display: 'flex',
                 flexDirection: 'column-reverse',
                 flex: 1,
                 color: appConfig.theme.colors.neutrals['000'],
+                zIndex: 9,
             }}
         >
-            {load && 
-                <LoadContent />
-            }
+            {load && <LoadContent />}
             {listaMsg.map((mensagem, key) => {
                 return (
-                    <Text
-                        key={key}
-                        tag="li"
-                        styleSheet={{
-                            borderRadius: '15px',
-                            padding: '24px 16px',
-                            transition: 'background 200ms ease',
-                            hover: {
-                                backgroundColor: '#9898981f',
-                                backdropFilter: 'blur(2px)',
-                            }
-                        }}
+                    <ClickNHold
+                        time={1}
+                        // onClickNHold={() => setDragClose(true)}
                     >
-                        <Box
-                            styleSheet={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                marginBottom: '8px',
-                            }}
-                        >
-                            <Image
-                                styleSheet={{
-                                    width: '30px',
-                                    height: '30px',
-                                    borderRadius: '50%',
-                                    display: 'inline-block',
-                                    marginRight: '8px',
-                                }}
-                                src={`https://github.com/${mensagem.from}.png`}
-                            />
-                            <Text tag="strong"
-                                styleSheet={{
-                                    fontSize: '16px',
-                                    color: appConfig.theme.colors.secondary[200],
-                                }}
-                            >
-                                {mensagem.from}
-                            </Text>
-                            <Text
-                                styleSheet={{
-                                    fontSize: '10px',
-                                    marginLeft: '8px',
-                                    color: appConfig.theme.colors.neutrals[200],
-                                }}
-                                tag="span"
-                            >
-                                {(new Date().toLocaleDateString())}
-                            </Text>
-                            <Button
-                                onClick={() => handleDelMsg(mensagem.id)}
-                                label={<IoCloseOutline style={{ width: '32px', height: '32px' }} />}
-                                variant="secondary"
-                                rounded="full"
-                                styleSheet={{
-                                    marginLeft: 'auto',
-                                    lineHeight: '5px',
-                                    padding: '0',
-                                    border: 'none',
-                                    color: appConfig.theme.colors.secondary[200],
-                                    hover: {
-                                        backgroundColor: 'transparent',
-                                        color: appConfig.theme.colors.secondary[200],
-                                    },
-                                    focus: {
-                                        backgroundColor: 'transparent',
-                                        color: appConfig.theme.colors.secondary[200],
-                                    },
-                                }}
-                            />
-                        </Box>
                         <Text
-                            tag="p"
+                            key={key}
+                            tag="li"
                             styleSheet={{
-                                marginLeft: '4px',
-                                marginTop: '16px',
+                                borderRadius: '15px',
+                                padding: '24px 16px',
+                                transition: 'background 200ms ease',
+                                hover: {
+                                    backgroundColor: '#9898981f',
+                                    backdropFilter: 'blur(2px)',
+                                },
                             }}
                         >
-                            {mensagem.content.startsWith(':sticker:')
-                                ? (
-                                    <Image src={mensagem.content.replace(':sticker:', '')}//trocando para nada || deletando
+                            <Box
+                                styleSheet={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    marginBottom: '8px',
+                                }}
+                            >
+                                <Image
+                                    styleSheet={{
+                                        width: '30px',
+                                        height: '30px',
+                                        borderRadius: '50%',
+                                        display: 'inline-block',
+                                        marginRight: '8px',
+                                        cursor: 'pointer'
+                                    }}
+                                    src={`https://github.com/${mensagem.from}.png`}
+                                    onClick={() => setShowProfile(true)}
+                                />
+                                <Box
+                                    styleSheet={{
+                                        display: 'flex',
+                                        alignItems: 'baseline',
+                                        justifyContent: 'left',
+                                        flexWrap: { sm: 'no-wrap', xs: 'wrap' },
+                                    }}
+                                >
+                                    <Text tag="strong"
                                         styleSheet={{
-                                            maxWidth: {
-                                                xs: '100px',
-                                                sm: '200px',
-                                            }
+                                            fontSize: '16px',
+                                            marginRight: '8px',
+                                            color: appConfig.theme.colors.secondary[200],
                                         }}
-                                    />
-                                )
-                                :
-                                (
-                                    mensagem.content
-                                )}
+                                    >
+                                        {mensagem.from}
+                                    </Text>
+                                    <Text
+                                        styleSheet={{
+                                            fontSize: '10px',
+                                            marginRight: '8px',
+                                            color: appConfig.theme.colors.neutrals[200],
+                                        }}
+                                        tag="span"
+                                    >
+                                        {(new Date().toLocaleDateString())}
+                                    </Text>
+                                </Box>
+                                <Button
+                                    onClick={() => handleDelMsg(mensagem.id)}
+                                    label={<IoCloseOutline style={{ width: '32px', height: '32px' }} />}
+                                    variant="secondary"
+                                    rounded="full"
+                                    styleSheet={{
+                                        display: { xs: 'none', sm: 'block' },
+                                        marginLeft: 'auto',
+                                        lineHeight: '5px',
+                                        padding: '0',
+                                        border: 'none',
+                                        color: appConfig.theme.colors.primary[200],
+                                        hover: {
+                                            backgroundColor: 'transparent',
+                                            color: appConfig.theme.colors.primary[200],
+                                        },
+                                        focus: {
+                                            backgroundColor: 'transparent',
+                                            color: appConfig.theme.colors.primary[200],
+                                        },
+                                    }}
+                                />
+                            </Box>
+                            <Text
+                                tag="p"
+                                styleSheet={{
+                                    marginLeft: '4px',
+                                    marginTop: '16px',
+                                }}
+                            >
+                                {mensagem.content.startsWith(':sticker:')
+                                    ? (
+                                        <Image src={mensagem.content.replace(':sticker:', '')}//trocando para nada || deletando
+                                            styleSheet={{
+                                                maxWidth: {
+                                                    xs: '100px',
+                                                    sm: '200px',
+                                                }
+                                            }}
+                                        />
+                                    )
+                                    :
+                                    (
+                                        mensagem.content
+                                    )}
+                            </Text>
                         </Text>
-                    </Text>
+                    </ClickNHold>
                 );
             })}
         </Box>
