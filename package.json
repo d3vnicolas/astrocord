@@ -6,6 +6,7 @@
   "dependencies": {
     "@skynexui/components": "^1.23.6",
     "@supabase/supabase-js": "^1.29.4",
+    "emoji-chars": "^1.0.12",
     "next": "^12.0.8",
     "react": "^17.0.2",
     "react-content-loader": "^6.1.0",
@@ -18,5 +19,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
+  },
+  "devDependencies": {
+    "react-click-n-hold": "^1.0.7"
   }
 }

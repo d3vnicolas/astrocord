@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button, Text, Image } from '@skynexui/components';
 import appConfig from '../../../config.json';
-
+import emojis from 'emoji-chars';
 /* 
     se não houver uma exportação default
     o import deve ser feito por desestruturação
@@ -9,6 +9,12 @@ import appConfig from '../../../config.json';
 
 export function ButtonSendSticker(props) {
   const [isOpen, setOpenState] = React.useState('');
+  const [randomIcon, setRandomIcon] = React.useState(0);
+
+  React.useEffect(() => {
+    const timer = setInterval(() => { setRandomIcon(Math.floor(Math.random() * 100)) }, 2000);
+    return () => { clearInterval(timer) }
+  }, []);
 
   return (
     <Box
@@ -19,11 +25,10 @@ export function ButtonSendSticker(props) {
     >
       <Button
         styleSheet={{
-          borderRadius: '50%',
+          borderRadius: '15px',
           padding: '0 3px 0 0',
           minWidth: '64px',
           minHeight: '64px',
-          fontSize: '20px',
           marginBottom: '8px',
           lineHeight: '0',
           display: 'flex',
@@ -41,7 +46,7 @@ export function ButtonSendSticker(props) {
             backgroundColor: 'transparent',
           },
         }}
-        label="😋"
+        label={emojis[randomIcon]}
         onClick={() => setOpenState(!isOpen)}
       />
       {isOpen && (
@@ -57,7 +62,7 @@ export function ButtonSendSticker(props) {
               sm: '290px',
             },
             height: '300px',
-            right: {sm: '30px', xs: '-180px'},
+            right: { sm: '30px', xs: '-180px' },
             bottom: '30px',
             padding: '16px',
             border: '1px solid rgba(255, 255, 255, 0.149)',
