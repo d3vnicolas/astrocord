@@ -24,7 +24,6 @@ export default function ChatPage() {
     const [mensagem, setMensagem] = React.useState('');
     const [listaMsg, setListaMsg] = React.useState([]);
     const [load, setLoad] = React.useState(true);
-    const [showProfile, setShowProfile] = React.useState(false);
     const handleNovaMsg = (msg) => {
         //monta um objeto com a mensagem nova
         const newMsg = {
@@ -114,8 +113,8 @@ export default function ChatPage() {
                 `}</style>
                 <div className='card'>
 
-                    <MessageList listaMsg={listaMsg} setListaMsg={setListaMsg} load={load} setShowProfile={setShowProfile} />
-                    {showProfile && <Profile setShowProfile={setShowProfile} />}
+                    <MessageList listaMsg={listaMsg} setListaMsg={setListaMsg} load={load}/>
+                    {/* {showProfile && <Profile setShowProfile={setShowProfile} />} */}
 
                 </div>
                 <Box
@@ -238,7 +237,7 @@ function Header() {
     )
 }
 
-function MessageList({ listaMsg, setListaMsg, load, setShowProfile }) {
+function MessageList({ listaMsg, setListaMsg, load}) {
 
     // const [dragClose, setDragClose] = React.useState(false);
 
@@ -268,7 +267,7 @@ function MessageList({ listaMsg, setListaMsg, load, setShowProfile }) {
                 return (
                     <ClickNHold
                         time={1}
-                        // onClickNHold={() => setDragClose(true)}
+                        // onClickNHold={() => setVisible(true)}
                     >
                         <Text
                             key={key}
@@ -300,7 +299,7 @@ function MessageList({ listaMsg, setListaMsg, load, setShowProfile }) {
                                         cursor: 'pointer'
                                     }}
                                     src={`https://github.com/${mensagem.from}.png`}
-                                    onClick={() => setShowProfile(true)}
+                                    // onClick={() => setVisible(true)}
                                 />
                                 <Box
                                     styleSheet={{
