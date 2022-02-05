@@ -27,7 +27,7 @@ export default function ChatPage() {
     const handleNovaMsg = (msg) => {
         //monta um objeto com a mensagem nova
         const newMsg = {
-            from: user,
+            origin: user,
             content: msg,
         }
 
@@ -298,7 +298,7 @@ function MessageList({ listaMsg, setListaMsg, load}) {
                                         marginRight: '8px',
                                         cursor: 'pointer'
                                     }}
-                                    src={`https://github.com/${mensagem.from}.png`}
+                                    src={`https://github.com/${mensagem.origin}.png`}
                                     // onClick={() => setVisible(true)}
                                 />
                                 <Box
@@ -316,7 +316,7 @@ function MessageList({ listaMsg, setListaMsg, load}) {
                                             color: appConfig.theme.colors.secondary[200],
                                         }}
                                     >
-                                        {mensagem.from}
+                                        {mensagem.origin}
                                     </Text>
                                     <Text
                                         styleSheet={{
