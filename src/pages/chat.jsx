@@ -1,13 +1,11 @@
 import React, { useEffect } from 'react';
-import { Box, Text, TextField, Image, Button } from '@skynexui/components';
-import { IoCloseOutline } from 'react-icons/io5';
+import { Box, Text, TextField, Button } from '@skynexui/components';
+import MessageList from '../Components/MessageList';
 import appConfig from '../../config.json';
 import { useRouter } from 'next/router';
 import { createClient } from '@supabase/supabase-js';
 import { ButtonSendSticker } from '../Components/ButtonSendSticker';
-import LoadContent from '../Components/PlaceholderLoad';
-import Profile from '../Components/Profile';
-import ClickNHold from 'react-click-n-hold';
+
 
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzMxNjA4MiwiZXhwIjoxOTU4ODkyMDgyfQ.kt0_M_4PARTmDTLiKhwvHSmp6aCKH4xVN9qmzTZagYs';
 const SUPABASE_URL = 'https://djhffvaqgiebncwviver.supabase.co';
@@ -24,6 +22,7 @@ export default function ChatPage() {
     const [mensagem, setMensagem] = React.useState('');
     const [listaMsg, setListaMsg] = React.useState([]);
     const [load, setLoad] = React.useState(true);
+
     const handleNovaMsg = (msg) => {
         //monta um objeto com a mensagem nova
         const newMsg = {
@@ -40,23 +39,30 @@ export default function ChatPage() {
     }
 
     useEffect(() => {
-        supabaseClient.from('mensagens').select('*').order('id', { ascending: false }).then(({ data }) => {
-            setListaMsg(data);
-            setLoad(false);
-        });
-
-        listenerInsert((data) => { //dispara sempre que houver um insert na tabela mensagens.
-            /* 
-                Passando uma callback no setState, capturamos sempre
-                seu valor atualizado
-            */
-            setListaMsg(updateValue => {
-                return [
-                    data.new,
-                    ...updateValue //... espalha o array para não criar um array dentro do array
-                ]
+        /* 
+            desvio temporário caso o username não seja preenchido
+        */
+        if(user){
+            supabaseClient.from('mensagens').select('*').order('id', { ascending: false }).then(({ data }) => {
+                setListaMsg(data);
+                setLoad(false);
             });
-        });
+    
+            listenerInsert((data) => { //dispara sempre que houver um insert na tabela mensagens.
+                /* 
+                    Passando uma callback no setState, capturamos sempre
+                    seu valor atualizado
+                */
+                setListaMsg(updateValue => {
+                    return [
+                        data.new,
+                        ...updateValue //... espalha o array para não criar um array dentro do array
+                    ]
+                });
+            });
+        }else{
+            roteamento.push('/')
+        }
     }, []);
 
     return (
@@ -113,8 +119,7 @@ export default function ChatPage() {
                 `}</style>
                 <div className='card'>
 
-                    <MessageList listaMsg={listaMsg} setListaMsg={setListaMsg} load={load}/>
-                    {/* {showProfile && <Profile setShowProfile={setShowProfile} />} */}
+                    <MessageList listaMsg={listaMsg} setListaMsg={setListaMsg} load={load} SUPABASE_ANON_KEY={SUPABASE_ANON_KEY} SUPABASE_URL={SUPABASE_URL} />
 
                 </div>
                 <Box
@@ -237,148 +242,3 @@ function Header() {
     )
 }
 
-function MessageList({ listaMsg, setListaMsg, load}) {
-
-    // const [dragClose, setDragClose] = React.useState(false);
-
-    const handleDelMsg = async (id) => {
-        setListaMsg(updateValue => {
-            return updateValue.filter(msg => msg.id !== id);
-        });
-        await supabaseClient
-            .from('mensagens').delete().match({ 'id': id });
-    }
-    return (
-        <Box
-            tag="ul"
-            styleSheet={{
-                width: '100%',
-                paddingRight: '4%',
-                overflow: 'auto',
-                display: 'flex',
-                flexDirection: 'column-reverse',
-                flex: 1,
-                color: appConfig.theme.colors.neutrals['000'],
-                zIndex: 9,
-            }}
-        >
-            {load && <LoadContent />}
-            {listaMsg.map((mensagem, key) => {
-                return (
-                    <ClickNHold
-                        time={1}
-                        // onClickNHold={() => setVisible(true)}
-                    >
-                        <Text
-                            key={key}
-                            tag="li"
-                            styleSheet={{
-                                borderRadius: '15px',
-                                padding: '24px 16px',
-                                transition: 'background 200ms ease',
-                                hover: {
-                                    backgroundColor: '#9898981f',
-                                    backdropFilter: 'blur(2px)',
-                                },
-                            }}
-                        >
-                            <Box
-                                styleSheet={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    marginBottom: '8px',
-                                }}
-                            >
-                                <Image
-                                    styleSheet={{
-                                        width: '30px',
-                                        height: '30px',
-                                        borderRadius: '50%',
-                                        display: 'inline-block',
-                                        marginRight: '8px',
-                                        cursor: 'pointer'
-                                    }}
-                                    src={`https://github.com/${mensagem.origin}.png`}
-                                    // onClick={() => setVisible(true)}
-                                />
-                                <Box
-                                    styleSheet={{
-                                        display: 'flex',
-                                        alignItems: 'baseline',
-                                        justifyContent: 'left',
-                                        flexWrap: { sm: 'no-wrap', xs: 'wrap' },
-                                    }}
-                                >
-                                    <Text tag="strong"
-                                        styleSheet={{
-                                            fontSize: '16px',
-                                            marginRight: '8px',
-                                            color: appConfig.theme.colors.secondary[200],
-                                        }}
-                                    >
-                                        {mensagem.origin}
-                                    </Text>
-                                    <Text
-                                        styleSheet={{
-                                            fontSize: '10px',
-                                            marginRight: '8px',
-                                            color: appConfig.theme.colors.neutrals[200],
-                                        }}
-                                        tag="span"
-                                    >
-                                        {(new Date().toLocaleDateString())}
-                                    </Text>
-                                </Box>
-                                <Button
-                                    onClick={() => handleDelMsg(mensagem.id)}
-                                    label={<IoCloseOutline style={{ width: '32px', height: '32px' }} />}
-                                    variant="secondary"
-                                    rounded="full"
-                                    styleSheet={{
-                                        display: { xs: 'none', sm: 'block' },
-                                        marginLeft: 'auto',
-                                        lineHeight: '5px',
-                                        padding: '0',
-                                        border: 'none',
-                                        color: appConfig.theme.colors.primary[200],
-                                        hover: {
-                                            backgroundColor: 'transparent',
-                                            color: appConfig.theme.colors.primary[200],
-                                        },
-                                        focus: {
-                                            backgroundColor: 'transparent',
-                                            color: appConfig.theme.colors.primary[200],
-                                        },
-                                    }}
-                                />
-                            </Box>
-                            <Text
-                                tag="p"
-                                styleSheet={{
-                                    marginLeft: '4px',
-                                    marginTop: '16px',
-                                }}
-                            >
-                                {mensagem.content.startsWith(':sticker:')
-                                    ? (
-                                        <Image src={mensagem.content.replace(':sticker:', '')}//trocando para nada || deletando
-                                            styleSheet={{
-                                                maxWidth: {
-                                                    xs: '100px',
-                                                    sm: '200px',
-                                                }
-                                            }}
-                                        />
-                                    )
-                                    :
-                                    (
-                                        mensagem.content
-                                    )}
-                            </Text>
-                        </Text>
-                    </ClickNHold>
-                );
-            })}
-        </Box>
-    )
-}

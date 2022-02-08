@@ -2,12 +2,19 @@ import React from 'react';
 import { Box, Button, Text, TextField, Image } from '@skynexui/components';
 import { useRouter } from 'next/router';
 import appConfig from '../../config.json';
-import { Oval } from 'react-loader-spinner';
+import { MutatingDots } from 'react-loader-spinner';
 
 export default function PaginaInicial() {
-    const [username, setUserName] = React.useState('github');
-    const [hasImage, setHasImage] = React.useState(true);
+    const [username, setUserName] = React.useState('');
+    const [hasImage, setHasImage] = React.useState(false);
     const Route = useRouter();
+    const textUser = React.useRef();
+
+    const handleNotUser = (component) => {
+        const el = component.current;
+        el.innerText = 'Usuário inexistente';
+        el.style.border = '1px solid #d60d17';
+    }
 
     return (
         <>
@@ -42,7 +49,9 @@ export default function PaginaInicial() {
                         as="form"
                         onSubmit={function (event) {
                             event.preventDefault();
-                            Route.push(`/chat?username=${username}`);
+                            if (username) {
+                                hasImage ? Route.push(`/chat?username=${username}`) : handleNotUser(textUser);
+                            }
                         }}
                         styleSheet={{
                             display: 'flex',
@@ -58,20 +67,30 @@ export default function PaginaInicial() {
                     >
                         <Text
                             styleSheet={{
-                                fontSize: '22px',
+                                fontSize: {
+                                    md: '22px',
+                                    sm: '16px',
+                                },
                                 fontWeight: '700',
                                 marginBottom: '8px',
+                                marginTop: '14px',
                                 color: appConfig.theme.colors.neutrals[200]
                             }}
                         >
                             Boas vindas de volta!
                         </Text>
-                        <Text variant="body3" styleSheet={{ marginBottom: '32px', fontWeight: '700', color: appConfig.theme.colors.secondary[100] }}>
+                        <Text variant="body3"
+                            styleSheet={{
+                                marginBottom: { xs: '32px', sm: '72px' },
+                                fontWeight: '700',
+                                color: appConfig.theme.colors.secondary[100]
+                            }}>
                             {appConfig.name}
                         </Text>
 
                         <TextField
                             fullWidth
+                            placeholder="Login..."
                             styleSheet={{
                                 backgroundColor: 'rgba(235, 235, 235, 0)',
                                 border: '1px solid transparent',
@@ -88,12 +107,12 @@ export default function PaginaInicial() {
                             value={username}
                             onChange={function (event) {
                                 setUserName(event.target.value);
+                                //retira a borda sempre que o input mudar e sempre que o span estiver visivel
+                                textUser.current ? textUser.current.style.border = 'none' : false;
                             }}
+                            required
                         />
                         <Button
-                            styleSheet={{
-
-                            }}
                             type='submit'
                             label='Entrar'
                             fullWidth
@@ -140,7 +159,8 @@ export default function PaginaInicial() {
                                     justifyContent: 'center',
                                 }}
                             >
-                                <Oval
+                                <MutatingDots
+                                    width={100}
                                     color={appConfig.theme.colors.secondary[200]}
                                     secondaryColor={appConfig.theme.colors.secondary[900]}
                                     ariaLabel="loading-indicator"
@@ -152,24 +172,39 @@ export default function PaginaInicial() {
                                 styleSheet={{
                                     borderRadius: '50%',
                                     marginBottom: '16px',
+                                    display: 'none',
                                 }}
                                 src={`https://github.com/${username}.png`}
-                                onError={event => { event.target.style.display = 'none'; setHasImage(false)}}
-                                onLoad={event => { event.target.style.display = 'block'; setHasImage(true)}}
+                                onError={event => { event.target.style.display = 'none'; setHasImage(false) }}
+                                onLoad={event => { event.target.style.display = 'block'; setHasImage(true) }}
                             />
 
                         </Box>
-                        <Text
-                            variant="body3"
-                            styleSheet={{
-                                color: appConfig.theme.colors.neutrals[200],
-                                padding: '4px 16px',
-                                borderRadius: '1000px',
-                                boxShadow: 'inset 0px 0px 3px 0px #0000008f',
-                            }}
-                        >
-                            {username || 'Procurando...'}
-                        </Text>
+                        {username !== '' &&
+                            // <Text
+                            //     ref={textUser}
+                            //     variant="body3"
+                            //     styleSheet={{
+                            //         color: appConfig.theme.colors.neutrals[200],
+                            //         padding: '4px 16px',
+                            //         borderRadius: '12px',
+                            //         boxShadow: 'inset 0px 0px 3px 0px #0000008f',
+                            //     }}
+                            // >
+                            //     {username}
+                            // </Text>
+                            <span
+                                ref={textUser}
+                                style={{
+                                    color: appConfig.theme.colors.neutrals[200],
+                                    padding: '4px 16px',
+                                    background: 'none',
+                                    borderRadius: '12px',
+                                    boxShadow: 'inset 0px 0px 3px 0px #0000008f',
+                                    fontSize: '14px',
+                                }}
+                            >{username}</span>
+                        }
                     </Box>
 
                 </Box>
