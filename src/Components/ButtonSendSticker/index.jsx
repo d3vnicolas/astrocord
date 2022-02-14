@@ -36,7 +36,7 @@ export function ButtonSendSticker(props) {
           justifyContent: 'center',
           border: '1px solid rgba(255, 255, 255, 0.149)',
           boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
-          backgroundColor: 'rgba(235, 235, 235, 0.1)',
+          backgroundColor: 'transparent',
           hover: {
             backgroundColor: 'transparent',
             border: `1px solid ${appConfig.theme.colors.primary[300]}`,

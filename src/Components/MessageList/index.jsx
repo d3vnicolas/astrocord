@@ -1,21 +1,14 @@
 import React from 'react';
 import { Image, Box, Button, Text } from '@skynexui/components';
 import LoadContent from '../../Components/PlaceholderLoad';
-import Profile from '../Profile';
 import ClickNHold from 'react-click-n-hold';
-import { IoCloseOutline } from 'react-icons/io5';
 import appConfig from '../../../config.json';
 import { createClient } from '@supabase/supabase-js';
 
 
-export default function MessageList({ listaMsg, setListaMsg, load, SUPABASE_ANON_KEY, SUPABASE_URL }) {
+export default function MessageList({ listaMsg, setListaMsg, load, SUPABASE_ANON_KEY, SUPABASE_URL, setProfile }) {
 
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    const handleShowProfile = (id) => {
-        const element = document.getElementById(id);
-        element.style.display = 'flex';
-    }
 
     const handleDelMsg = async id => {
         setListaMsg(updateValue => {
@@ -38,13 +31,14 @@ export default function MessageList({ listaMsg, setListaMsg, load, SUPABASE_ANON
                 zIndex: 9,
             }}
         >
+
             {load && <LoadContent />}
             {listaMsg.map((mensagem, key) => {
                 return (
                     <ClickNHold
                         key={key}
                         time={1}
-                        onClickNHold={() => handleShowProfile(mensagem.id)}
+                        onClickNHold={() => setProfile({show: true, user: mensagem.origin})}
                     >
                         
                         <Text
@@ -59,7 +53,6 @@ export default function MessageList({ listaMsg, setListaMsg, load, SUPABASE_ANON
                                 },
                             }}
                         >
-                            <Profile id={mensagem.id} user={mensagem.origin} />
                             <Box
                                 styleSheet={{
                                     display: 'flex',
@@ -77,7 +70,7 @@ export default function MessageList({ listaMsg, setListaMsg, load, SUPABASE_ANON
                                         cursor: 'pointer'
                                     }}
                                     src={`https://github.com/${mensagem.origin}.png`}
-                                    onClick={() => handleShowProfile(mensagem.id)}
+                                    onClick={() => setProfile({show: true, user: mensagem.origin})}
                                 />
                                 <Box
                                     styleSheet={{

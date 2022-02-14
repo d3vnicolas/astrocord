@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Box, Text, TextField, Button } from '@skynexui/components';
 import MessageList from '../Components/MessageList';
+import Profile from '../Components/Profile';
 import appConfig from '../../config.json';
 import { useRouter } from 'next/router';
 import { createClient } from '@supabase/supabase-js';
@@ -22,6 +23,10 @@ export default function ChatPage() {
     const [mensagem, setMensagem] = React.useState('');
     const [listaMsg, setListaMsg] = React.useState([]);
     const [load, setLoad] = React.useState(true);
+    const [profile, setProfile] = React.useState({
+        show: false,
+        user: '',
+    });
 
     const handleNovaMsg = (msg) => {
         //monta um objeto com a mensagem nova
@@ -94,11 +99,12 @@ export default function ChatPage() {
                     borderRadius: '15px', padding: '32px', margin: '16px',
                     border: '1px solid rgba(255, 255, 255, 0.149)',
                     boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
-                    backgroundColor: 'rgba(235, 235, 235, 0.1)',
+                    // backgroundColor: 'rgba(235, 235, 235, 0.1)',
                     backdropFilter: 'blur(3px)',
                 }}
             >
                 <Header />
+                {profile.show && <Profile user={profile.user} setProfile={setProfile} />}
                 <style jsx>{`
                     div.card{
                         position: relative;
@@ -119,7 +125,7 @@ export default function ChatPage() {
                 `}</style>
                 <div className='card'>
 
-                    <MessageList listaMsg={listaMsg} setListaMsg={setListaMsg} load={load} SUPABASE_ANON_KEY={SUPABASE_ANON_KEY} SUPABASE_URL={SUPABASE_URL} />
+                    <MessageList listaMsg={listaMsg} setListaMsg={setListaMsg} setProfile={setProfile} load={load} SUPABASE_ANON_KEY={SUPABASE_ANON_KEY} SUPABASE_URL={SUPABASE_URL} />
 
                 </div>
                 <Box
