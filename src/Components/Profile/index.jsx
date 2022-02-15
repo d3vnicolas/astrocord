@@ -29,7 +29,7 @@ const Profile = (props) => {
                 transform: 'translate(-50%, -50%)',
                 boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
                 border: `1px solid ${appConfig.theme.colors.primary[900]}`,
-                backgroundColor: 'rgba(0, 0, 0, .5)',
+                backgroundColor: '#000000c2',
                 backdropFilter: 'blur(2px)',
                 width: '100%',
                 maxWidth: '580px',

@@ -34,6 +34,7 @@ export default function MessageList({ listaMsg, setListaMsg, load, SUPABASE_ANON
 
             {load && <LoadContent />}
             {listaMsg.map((mensagem, key) => {
+                const date = new Date(mensagem.created_at);
                 return (
                     <ClickNHold
                         key={key}
@@ -97,7 +98,7 @@ export default function MessageList({ listaMsg, setListaMsg, load, SUPABASE_ANON
                                         }}
                                         tag="span"
                                     >
-                                        {(new Date().toLocaleDateString())}
+                                        {date.toLocaleDateString('pt-BR', { month: 'short', day: 'numeric' }) + ' às ' + date.toLocaleTimeString('pt-BR', {timeStyle: 'short'})}
                                     </Text>
                                 </Box>
                                 <Button
