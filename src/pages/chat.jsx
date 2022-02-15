@@ -95,11 +95,11 @@ export default function ChatPage() {
                     height: '100%',
                     maxHeight: '90%',
                     overflow: 'auto',
-                    padding: '32px',
-                    borderRadius: '15px', padding: '32px', margin: '16px',
+                    borderRadius: '15px', 
+                    padding: {xs: '16px', sm: '32px'}, 
+                    margin: '16px',
                     border: '1px solid rgba(255, 255, 255, 0.149)',
                     boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
-                    // backgroundColor: 'rgba(235, 235, 235, 0.1)',
                     backdropFilter: 'blur(3px)',
                 }}
             >
