@@ -38,14 +38,14 @@ export default function PaginaInicial() {
                             sm: 'row',
                         },
                         width: '100%', maxWidth: '700px',
-                        borderRadius: '15px', padding: '32px', margin: '16px',
+                        borderRadius: '15px', padding: '16px', margin: '16px',
                         border: '1px solid rgba(255, 255, 255, 0.149)',
                         boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
                         backgroundColor: 'rgba(235, 235, 235, 0.1)',
                         backdropFilter: 'blur(2px)',
                     }}
                 >
-                    <Box /* box login */
+                    <Box /* box image */
                         as="form"
                         onSubmit={function (event) {
                             event.preventDefault();
@@ -77,15 +77,24 @@ export default function PaginaInicial() {
                                 color: appConfig.theme.colors.neutrals[200]
                             }}
                         >
-                            Boas vindas de volta!
+                            Bem-vindo!
                         </Text>
                         <Text variant="body3"
                             styleSheet={{
-                                marginBottom: { xs: '32px', sm: '72px' },
+                                marginBottom: { xs: '16px', sm: '42px' },
                                 fontWeight: '700',
                                 color: appConfig.theme.colors.secondary[100]
                             }}>
                             {appConfig.name}
+                        </Text>
+                        <Text
+                            variant='body4'
+                            styleSheet={{
+                                marginBottom: '16px',
+                                color: appConfig.theme.colors.secondary[100]
+                            }}
+                        >
+                            {appConfig.alert}
                         </Text>
 
                         <TextField
@@ -181,18 +190,6 @@ export default function PaginaInicial() {
 
                         </Box>
                         {username !== '' &&
-                            // <Text
-                            //     ref={textUser}
-                            //     variant="body3"
-                            //     styleSheet={{
-                            //         color: appConfig.theme.colors.neutrals[200],
-                            //         padding: '4px 16px',
-                            //         borderRadius: '12px',
-                            //         boxShadow: 'inset 0px 0px 3px 0px #0000008f',
-                            //     }}
-                            // >
-                            //     {username}
-                            // </Text>
                             <span
                                 ref={textUser}
                                 style={{
