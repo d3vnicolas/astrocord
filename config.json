@@ -1,5 +1,6 @@
 {
     "name": "AstroCord",
+    "alert": "Este app não faz uso de recursos de segurança, portanto, as mensagens aqui enviadas são fictícias.",
     "theme": {
         "colors": {
             "primary": {
